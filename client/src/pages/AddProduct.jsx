@@ -9,9 +9,14 @@ import { FormControl } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import * as Yup from "yup";
 import { Formik } from "formik";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useState } from "react";
+import axios from "axios"
+import { DUMMY_PRODUCT_iMAGE, UPLOAD_API, UPLOAD_PRESET } from "../Utils/constatnts";
+
+// import useImageUpload from "../Utils/Hooks/useImageUpload";
 
 const schema = Yup.object().shape({
   prodName: Yup.string().required("email is a required field"),
@@ -50,23 +55,50 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const AddProduct = () => {
-  const handleSubmit = (values) => {
-    console.log(values);
-  };
+const AddProduct =  () => {
+
+  const [selectedImage,setSelectedImage] = useState(null)
+
+  const handleOnChange = (file)=>{
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setSelectedImage(null);
+    }
+  }
+
+  const handleSubmit = async()=>{
+    const data = new FormData()
+    data.append('file', selectedImage)
+    data.append('upload_preset',UPLOAD_PRESET)
+    try{
+      let api = UPLOAD_API
+      const res = await axios.post(api,data)
+      const {secure_url} = res.data
+      console.log(secure_url)
+    }catch(err){
+      console.log(err)
+    }
+  }
+ 
 
   return (
     <div>
-      <Box sx={{ flexGrow: 1, m: 2, p: 2 }}>
+      <Box sx={{ flexGrow: 1, m: 2, p: 2, position: "relative", top: 100 }}>
         <Grid container spacing={2}>
           <Grid item xs={8}>
-            <Item>
+            <Item sx={{ p: 8, height: 370 }}>
               <Typography sx={{ fontSize: "h6.fontSize", mb: 4 }}>
                 Add Product
               </Typography>
               <Box
                 sx={{
                   "& .MuiTextField-root": { m: 1, width: "25ch" },
+                  height: 350,
                 }}
                 noValidate
                 autoComplete="off"
@@ -93,9 +125,13 @@ const AddProduct = () => {
                           <TextField
                             id="prodName"
                             name="prodName"
-                            error={(errors.prodName && touched.prodName) ? true : false}
+                            error={
+                              errors.prodName && touched.prodName ? true : false
+                            }
                             helperText={
-                              (errors.prodName && touched.prodName) ? "product name is required" : ""
+                              errors.prodName && touched.prodName
+                                ? "product name is required"
+                                : ""
                             }
                             label="Name"
                             onChange={handleChange}
@@ -111,9 +147,13 @@ const AddProduct = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             value={values.prodCategory}
-                            error={(errors.prodCategory && touched.prodCategory) ? true : false}
+                            error={
+                              errors.prodCategory && touched.prodCategory
+                                ? true
+                                : false
+                            }
                             helperText={
-                              (errors.prodCategory && touched.prodCategory)
+                              errors.prodCategory && touched.prodCategory
                                 ? "product category is required"
                                 : ""
                             }
@@ -129,9 +169,13 @@ const AddProduct = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             value={values.prodDescription}
-                            error={(errors.prodDescription && touched.prodDescription) ? true : false}
+                            error={
+                              errors.prodDescription && touched.prodDescription
+                                ? true
+                                : false
+                            }
                             helperText={
-                              (errors.prodDescription && touched.prodDescription)
+                              errors.prodDescription && touched.prodDescription
                                 ? "product description is required"
                                 : ""
                             }
@@ -145,9 +189,13 @@ const AddProduct = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             value={values.prodPrice}
-                            error={(errors.prodPrice && touched.prodPrice) ? true : false}
+                            error={
+                              errors.prodPrice && touched.prodPrice
+                                ? true
+                                : false
+                            }
                             helperText={
-                              (errors.prodPrice && touched.prodPrice)
+                              errors.prodPrice && touched.prodPrice
                                 ? "product price is required"
                                 : ""
                             }
@@ -165,16 +213,18 @@ const AddProduct = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             value={values.gender}
-                            error={(errors.gender && touched.gender) ? true : false}
+                            error={
+                              errors.gender && touched.gender ? true : false
+                            }
                             helperText={
-                              (errors.gender && touched.gender)
+                              errors.gender && touched.gender
                                 ? "gender is required"
                                 : ""
                             }
                           >
-                            <MenuItem value={10}>Male</MenuItem>
-                            <MenuItem value={20}>Female</MenuItem>
-                            <MenuItem value={30}>Unisex</MenuItem>
+                            <MenuItem value={"male"}>Male</MenuItem>
+                            <MenuItem value={"female"}>Female</MenuItem>
+                            <MenuItem value={"unisex"}>Unisex</MenuItem>
                           </Select>
                         </FormControl>
 
@@ -186,9 +236,13 @@ const AddProduct = () => {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             value={values.prodDiscount}
-                            error={(errors.prodDiscount && touched.prodDiscount) ? true : false}
+                            error={
+                              errors.prodDiscount && touched.prodDiscount
+                                ? true
+                                : false
+                            }
                             helperText={
-                              (errors.prodDiscount && touched.prodDiscount)
+                              errors.prodDiscount && touched.prodDiscount
                                 ? "product discount is required"
                                 : ""
                             }
@@ -205,6 +259,20 @@ const AddProduct = () => {
                         >
                           Add Product
                         </Button>
+                        <Button
+                          sx={{ ml: 2 }}
+                          component="label"
+                          variant="contained"
+                          startIcon={<CloudUploadIcon />}
+                        >
+                          Upload file
+                          <VisuallyHiddenInput
+                            type="file"
+                            name="prodImage"
+                            id="prodImage"
+                            onChange={(e) => handleOnChange(e.target.files[0])}
+                          />
+                        </Button>
                       </Box>
                     </form>
                   )}
@@ -212,24 +280,14 @@ const AddProduct = () => {
               </Box>
             </Item>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={4} sx={{}}>
             <Item>
-              <Box sx={{ p: 8, height: 370 }}>
+              <Box sx={{ p: 8, height: 360 }}>
                 <img
-                  src="https://iconicentertainment.in/wp-content/uploads/2013/11/dummy-image-square.jpg"
-                  alt=""
-                  height={200}
-                  width={200}
+                  src={selectedImage ? selectedImage : DUMMY_PRODUCT_iMAGE}
+                  alt="product image coming soon"
+                  style={{ objectFit: "cover", height: "100%", width: "100%" }}
                 />
-                <Button
-                  sx={{ mt: 2 }}
-                  component="label"
-                  variant="contained"
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Upload file
-                  <VisuallyHiddenInput type="file" />
-                </Button>
               </Box>
             </Item>
           </Grid>
