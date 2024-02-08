@@ -1,208 +1,195 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
-import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
-import { Link } from "react-router-dom";
-import { Link as MaterialLink } from "@mui/material";
+import React, { Fragment, useState } from 'react';
+import { Link } from 'react-router-dom';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Toolbar from '@mui/material/Toolbar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+// import logo from 'https://img.icons8.com/bubbles/344/amazon-alexa-logo.png';
+import { theme } from '../Utils/Theme';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import Paper from '@mui/material/Paper';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import MenuIcon from '@mui/icons-material/Menu';
+import IconButton from '@mui/material/IconButton';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-const pages = [
-  { name: "Products", route: "/products" },
-  { name: "Add Products", route: "/addProducts" },
-];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const styles = {
+  toolbarMargin: {
+    ...theme.mixins.toolbar,
+    marginBottom: '3em',
+    [theme.breakpoints.down('md')]: {
+      marginBottom: '2em',
+    },
+    [theme.breakpoints.down('xs')]: {
+      marginBottom: '1.25em',
+    },
+  },
+  logo: {
+    height: '8em',
+    [theme.breakpoints.down('md')]: {
+      height: '7em',
+    },
+    [theme.breakpoints.down('xs')]: {
+      height: '5.5em',
+    },
+  },
+  logoContainer: {
+    padding: 0,
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+    color:"white",
+    fontSize: 24,
+    marginLeft:'20px'
 
-function Header() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  },
+  tabs: {
+    marginLeft: 'auto',
+    '& .MuiButtonBase-root.MuiTab-root': {
+      fontSize: 16,
+    },
+    '& .Mui-selected': {
+      backgroundColor: 'white',
+      color: '#000',
+      opacity: 0.7,
+      borderRadius: 2,
+    },
+  },
+  tab: {
+    ...theme.typography.tab,
+    minWidth: 10,
+    marginLeft: '25px',
+    color: 'white',
+  },
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
+  hamburgerMenuIcon: {
+    height: '50px',
+    width: '50px',
+  },
+  menuIconContainer: {
+    marginLeft: 'auto',
+    color: 'white',
+    '&:hover': {
+      opacity: 1,
+    },
+  },
+  appbar: {
+    zIndex: theme.zIndex.modal + 1,
+    backgroundColor:"#42A5F5",
+    padding:"10px"
+  },
+};
+
+const DesktopNavigation = () => {
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
+  return (
+    <Tabs
+      value={value}
+      onChange={handleChange}
+      aria-label="nav tabs example"
+      sx={styles.tabs}
+    >
+      <Tab sx={styles.tab} label="Home" component={Link} to="/" />
+      <Tab sx={styles.tab} label="Products" component={Link} to="/products" />
+      <Tab sx={styles.tab} label="Add products" component={Link} to="/addProducts" />
+    </Tabs>
+  );
+};
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+const MobileNavigation = () => {
+  const [openDrawer, setOpenDrawer] = React.useState(false);
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const iOS =
+    typeof navigator !== 'undefined' &&
+    /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   return (
-    <AppBar position="static">
-      <Container sx={{ width: "100%", maxWidth: "xl" }}>
-        <Toolbar disableGutters>
-          <ShoppingBagIcon
-            sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-          />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            <MaterialLink
-              sx={{ color: "white" }}
-              underline="none"
+    <React.Fragment>
+      <SwipeableDrawer
+        disableBackdropTransition={!iOS}
+        disableDiscovery={iOS}
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        onOpen={() => setOpenDrawer(true)}
+      >
+        <Box sx={styles.toolbarMargin} />
+        <Paper>
+          <List disablePadding>
+            <ListItem
+              divider
+              button
               component={Link}
-              to={"/"}
+              to="/"
+              onClick={() => setOpenDrawer(false)}
             >
-              S-CART
-            </MaterialLink>
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                color: "white",
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">
-                    <MaterialLink
-                      sx={{ color: "blue" }}
-                      underline="none"
-                      component={Link}
-                      to={page.route}
-                    >
-                      {page.name}
-                    </MaterialLink>
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <ShoppingBagIcon
-            sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
-          />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            <MaterialLink
-              sx={{ color: "white" }}
-              underline="none"
+              <ListItemText disableTypography>Home</ListItemText>
+            </ListItem>
+            <ListItem
+              divider
+              button
               component={Link}
-              to={"/"}
+              to="/products"
+              onClick={() => setOpenDrawer(false)}
             >
-              S-CART
-            </MaterialLink>
-          </Typography>
-          <Box
-            sx={{
-              flexGrow: 1,
-              color: "white",
-              display: { xs: "none", md: "flex" },
-            }}
-          >
-            {pages.map((page) => (
-              <Button
-                key={page.name}
-                component={Link}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                <MaterialLink
-                  sx={{ color: "white" }}
-                  underline="none"
-                  component={Link}
-                  to={page.route}
-                >
-                  {page.name}
-                </MaterialLink>
-              </Button>
-            ))}
-          </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              <ListItemText disableTypography>Products</ListItemText>
+            </ListItem>
+            <ListItem
+              divider
+              button
+              component={Link}
+              to="/addProducts"
+              onClick={() => setOpenDrawer(false)}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+              <ListItemText disableTypography>Add Products</ListItemText>
+            </ListItem>
+          </List>
+        </Paper>
+      </SwipeableDrawer>
+      <IconButton
+        sx={styles.menuIconContainer}
+        onClick={() => setOpenDrawer(!openDrawer)}
+        disableRipple
+      >
+        <MenuIcon sx={styles.hamburgerMenuIcon} />
+      </IconButton>
+    </React.Fragment>
   );
-}
+};
+
+const Header = () => {
+  const isMobileMode = useMediaQuery(theme.breakpoints.down('sm'));
+
+  return (
+    <Fragment>
+      <AppBar
+        position="fixed"
+        sx={styles.appbar}
+        color="secondary"
+        elevation={9}
+      >
+        <Toolbar disableGutters={true}>
+          <Button
+            disableRipple
+            component={Link}
+            to="/"
+            sx={styles.logoContainer}
+          >
+            <Box alt="company logo" />
+            LOGO
+          </Button>
+          {isMobileMode ? <MobileNavigation /> : <DesktopNavigation />}
+        </Toolbar>
+      </AppBar>
+    </Fragment>
+  );
+};
+
 export default Header;

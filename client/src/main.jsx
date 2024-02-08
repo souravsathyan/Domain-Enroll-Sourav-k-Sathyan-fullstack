@@ -6,6 +6,7 @@ import Home from "./pages/Home"
 import Products from "./pages/Products"
 import Layout from './components/Layout.jsx';
 import AddProduct from './pages/AddProduct.jsx';
+import Error from './pages/Error.jsx';
 
 const appRouter = createBrowserRouter([
   {
@@ -24,7 +25,8 @@ const appRouter = createBrowserRouter([
         path:"/addProducts",
         element:<AddProduct/>
       }
-    ]
+    ],
+    errorElement:<Error/>
   },
   
 ])
