@@ -14,7 +14,7 @@ import { Formik } from "formik";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useState } from "react";
 import axios from "axios"
-import { DUMMY_PRODUCT_iMAGE, UPLOAD_API, UPLOAD_PRESET } from "../Utils/constatnts";
+import { DUMMY_PRODUCT_iMAGE, UPLOAD_API, UPLOAD_PRESET } from "../Utils/constants";
 
 // import useImageUpload from "../Utils/Hooks/useImageUpload";
 

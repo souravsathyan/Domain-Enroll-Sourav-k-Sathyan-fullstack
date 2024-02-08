@@ -1,0 +1,35 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "domain enroll ecommerce web app backeend",
+  "main": "./src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon ./src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/souravsathyan/Domain-Enroll-Sourav-k-Sathyan-fullstack.git"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "react",
+    "backend"
+  ],
+  "author": "sourav k sathyan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/souravsathyan/Domain-Enroll-Sourav-k-Sathyan-fullstack/issues"
+  },
+  "homepage": "https://github.com/souravsathyan/Domain-Enroll-Sourav-k-Sathyan-fullstack#readme",
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.1.1"
+  },
+  "dependencies": {
+    "nodemon": "^3.0.3"
+  }
+}
