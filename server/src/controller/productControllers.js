@@ -1,16 +1,18 @@
 import Product from "../model/productModel.js"
 import asyncErrorHandler from "../utils/asyncErrorHandler.js"
+import { CustomError } from "../utils/customError.js";
 
 export const getAllProducts = asyncErrorHandler(async (req, res, next) => {
-    const page = parseInt(req.query.page) - 1 || 0
-    const limit = parseInt(req.query.limit) || 5
-    const search = req.query.search || ""
 
-    const products = await Product.find({ name: { $regex: search, $options: "i" } })
+    
+    const totalProducts = await Product.countDocuments()
+    const page = Math.max(0, parseInt(req.query.page) - 1) || 0;
+    const limit = Math.max(1, Math.min(100, parseInt(req.query.limit))) || totalProducts
+
+    const products = await Product.find()
         .skip(page * limit)
         .limit(limit)
 
-    const totalProducts = await Product.countDocuments({ name: { $regex: search, $options: "i" } })
 
     res.status(200).json({
         data: {
@@ -86,9 +88,23 @@ export const deleteProduct = asyncErrorHandler(async (req, res, next) => {
     const prodId = req.params.id
     await Product.findByIdAndDelete(prodId)
     res.status(200).json({
-        data:{
-            error:false,
-            message:"product deleted successfully"
+        data: {
+            error: false,
+            message: "product deleted successfully"
         }
-    }) 
+    })
+})
+
+export const getProduct = asyncErrorHandler(async (req, res, next) => {
+    const paramsId = req.params.id
+    const product = await Product.findById({ paramsId })
+    if (!product) {
+        const error = new CustomError('product could not find', 404)
+        next(error)
+    }
+    res.status(200).json({
+        data: {
+            product
+        }
+    })
 })

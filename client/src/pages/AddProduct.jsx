@@ -42,7 +42,6 @@ const initialValues = {
   prodDiscount: "",
 };
 
-
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -66,7 +65,7 @@ const Item = styled(Paper)(({ theme }) => ({
 const AddProduct = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(null)
+  const [isSuccess, setIsSuccess] = useState(null);
 
   const handleOnChange = (file) => {
     if (file) {
@@ -92,11 +91,9 @@ const AddProduct = () => {
       const { secure_url } = cloudRes.data;
       const updatedValues = { ...values, prodImage: secure_url };
 
-      const res =await axios.post(SERVER_API+'/add',updatedValues)
-      console.log(res)
-
+      const res = await axios.post(SERVER_API + "/add", updatedValues);
       setIsLoading(false);
-      setIsSuccess(true)
+      setIsSuccess(true);
     } catch (err) {
       console.log(err);
     }
@@ -105,19 +102,16 @@ const AddProduct = () => {
   return (
     <div>
       <Box sx={{ flexGrow: 1, m: 2, p: 2, position: "relative", top: 100 }}>
-      {
-        isSuccess &&
-         <AlertComponent setIsSuccess={setIsSuccess}/>
-      }
+        {isSuccess && <AlertComponent setIsSuccess={setIsSuccess} />}
         <Grid container spacing={2}>
           <Grid item xs={12} xl={8}>
-            <Item sx={{p:8,height:370}}>
+            <Item sx={{ p: 8, height: 370 }}>
               <Typography sx={{ fontSize: "h6.fontSize", mb: 4 }}>
                 Add Product
               </Typography>
               <Box
                 sx={{
-                  "& .MuiTextField-root": { m: 1, width: "25ch" }
+                  "& .MuiTextField-root": { m: 1, width: "25ch" },
                 }}
                 noValidate
                 autoComplete="off"
@@ -303,11 +297,11 @@ const AddProduct = () => {
             <Item>
               <Box
                 display="flex"
-                height={{xs:500,xl:370}}
+                height={{ xs: 500, xl: 370 }}
                 flexDirection="column"
                 alignItems="center"
                 justifyContent="center"
-                sx={{ p: 8}}
+                sx={{ p: 8 }}
               >
                 {isLoading ? (
                   <InfinitySpin
@@ -324,15 +318,17 @@ const AddProduct = () => {
                       </Typography>
                     </Box>
                     <Box>
-                    <img
-                      src={selectedImage ? selectedImage : DUMMY_PRODUCT_iMAGE}
-                      alt="product image coming soon"
-                      style={{
-                        objectFit: "cover",
-                        maxHeight: "300px",
-                        maxWidth: "300px",
-                      }}
-                    />
+                      <img
+                        src={
+                          selectedImage ? selectedImage : DUMMY_PRODUCT_iMAGE
+                        }
+                        alt="product image coming soon"
+                        style={{
+                          objectFit: "cover",
+                          maxHeight: "300px",
+                          maxWidth: "300px",
+                        }}
+                      />
                     </Box>
                   </>
                 )}

@@ -16,6 +16,19 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Badge from '@mui/material/Badge';
+import { styled } from '@mui/material/styles';
+import {useSelector} from "react-redux"
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: '0 4px',
+  },
+}));
 
 const styles = {
   toolbarMargin: {
@@ -64,6 +77,17 @@ const styles = {
     minWidth: 10,
     marginLeft: '25px',
     color: 'white',
+    padding: '0 12px',
+    marginRight: '12px',
+    textTransform: 'capitalize',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    '&:hover': {
+      color: 'primary.dark',
+    },
+    '&.Mui-selected': {
+      color: 'secondary.main',
+    },
   },
 
   hamburgerMenuIcon: {
@@ -86,6 +110,15 @@ const styles = {
 
 const DesktopNavigation = () => {
   const [value, setValue] = useState(0);
+  const cartSelector = useSelector((store)=>store.cart)
+  let totalCartCount = 0
+  if(cartSelector.length==0){
+    totalCartCount = 0
+  }else{
+    totalCartCount = cartSelector.reduce((total, item) => total + item.count, 0) || 0
+
+  }
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -100,6 +133,7 @@ const DesktopNavigation = () => {
       <Tab sx={styles.tab} label="Home" component={Link} to="/" />
       <Tab sx={styles.tab} label="Products" component={Link} to="/products" />
       <Tab sx={styles.tab} label="Add products" component={Link} to="/addProducts" />
+      <Tab sx={styles.tab} icon={<StyledBadge badgeContent={totalCartCount} color="secondary"><ShoppingCartIcon /></StyledBadge>} component={Link} to="/cart" />
     </Tabs>
   );
 };
@@ -183,7 +217,7 @@ const Header = () => {
             sx={styles.logoContainer}
           >
             <Box alt="company logo" />
-            LOGO
+            S-CART
           </Button>
           {isMobileMode ? <MobileNavigation /> : <DesktopNavigation />}
         </Toolbar>
