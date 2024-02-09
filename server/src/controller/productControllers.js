@@ -2,8 +2,10 @@ import Product from "../model/productModel.js"
 import asyncErrorHandler from "../utils/asyncErrorHandler.js"
 
 export const getAllProducts = asyncErrorHandler(async (req, res, next) => {
-    const page = parseInt(req.query.page) - 1 || 0
-    const limit = parseInt(req.query.limit) || 5
+   
+   console.log(req.query)
+   const page = Math.max(0, parseInt(req.query.page) - 1);
+   const limit = Math.max(1, Math.min(100, parseInt(req.query.limit)));
     const search = req.query.search || ""
 
     const products = await Product.find({ name: { $regex: search, $options: "i" } })
@@ -86,9 +88,9 @@ export const deleteProduct = asyncErrorHandler(async (req, res, next) => {
     const prodId = req.params.id
     await Product.findByIdAndDelete(prodId)
     res.status(200).json({
-        data:{
-            error:false,
-            message:"product deleted successfully"
+        data: {
+            error: false,
+            message: "product deleted successfully"
         }
-    }) 
+    })
 })
