@@ -30,6 +30,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   },
 }));
 
+// styles for the header
+
 const styles = {
   toolbarMargin: {
     ...theme.mixins.toolbar,
@@ -108,6 +110,9 @@ const styles = {
   },
 };
 
+// desktop and mobile navigation based ont he devices
+
+
 const DesktopNavigation = () => {
   const [value, setValue] = useState(0);
   const cartSelector = useSelector((store)=>store.cart)
@@ -183,6 +188,15 @@ const MobileNavigation = () => {
               onClick={() => setOpenDrawer(false)}
             >
               <ListItemText disableTypography>Add Products</ListItemText>
+            </ListItem>
+            <ListItem
+              divider
+              button
+              component={Link}
+              to="/cart"
+              onClick={() => setOpenDrawer(false)}
+            >
+              <ListItemText disableTypography>Cart</ListItemText>
             </ListItem>
           </List>
         </Paper>

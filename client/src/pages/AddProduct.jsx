@@ -23,8 +23,7 @@ import {
 import { InfinitySpin } from "react-loader-spinner";
 import AlertComponent from "../components/Alert";
 
-// import useImageUpload from "../Utils/Hooks/useImageUpload";
-
+// Yup for easy form validation
 const schema = Yup.object().shape({
   prodName: Yup.string().required("email is a required field"),
   prodCategory: Yup.string().required("Category is required"),
@@ -33,6 +32,7 @@ const schema = Yup.object().shape({
   gender: Yup.string().required("gender is required"),
   prodDiscount: Yup.string().required("Discount is required"),
 });
+// intial values for form
 const initialValues = {
   prodName: "",
   prodCategory: "",
@@ -42,6 +42,7 @@ const initialValues = {
   prodDiscount: "",
 };
 
+// for the mui buttons and Items-----
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -61,6 +62,7 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
+// ---------------------------------
 
 const AddProduct = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -102,6 +104,7 @@ const AddProduct = () => {
   return (
     <div>
       <Box sx={{ flexGrow: 1, m: 2, p: 2, position: "relative", top: 100 }}>
+        {/* Alert component if product added successfully */}
         {isSuccess && <AlertComponent setIsSuccess={setIsSuccess} />}
         <Grid container spacing={2}>
           <Grid item xs={12} xl={8}>
@@ -116,6 +119,7 @@ const AddProduct = () => {
                 noValidate
                 autoComplete="off"
               >
+              {/* {Form starts} */}
                 <Formik
                   validationSchema={schema}
                   initialValues={initialValues}
@@ -290,10 +294,12 @@ const AddProduct = () => {
                     </form>
                   )}
                 </Formik>
+                {/* Form ends */}
               </Box>
             </Item>
           </Grid>
           <Grid item xs={12} xl={4} sx={{}}>
+            {/* Image upload container */}
             <Item>
               <Box
                 display="flex"
@@ -334,6 +340,7 @@ const AddProduct = () => {
                 )}
               </Box>
             </Item>
+            {/* --------- */}
           </Grid>
         </Grid>
       </Box>

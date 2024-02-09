@@ -20,6 +20,8 @@ const prodErrors = (res,error)=>{
         })
     }
 }
+// sending the error based on the node environment 
+// more details on the develop mode
 export const globalErrorHandler = (error,req,res,next)=>{
     error.statusCode = error.statusCode || 500
     error.status = error.status || 'error'

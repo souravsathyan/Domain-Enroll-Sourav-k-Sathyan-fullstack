@@ -77,6 +77,7 @@ const Products = () => {
     pagechange(0);
   };
 
+//--------- deleting the product Calling api-------
   const handleDelete = async (row) => {
     try {
       const url = `${SERVER_API}/delete/${row._id}`;
@@ -93,6 +94,9 @@ const Products = () => {
       console.log(error);
     }
   };
+  // ---------------------------------------
+
+  // for alerts and modals-------------
   const handleClickOpen = () => {
     setOpenAlert(true);
   };
@@ -118,7 +122,7 @@ const Products = () => {
     dispatch(clearProduct());
     openchange(false);
   };
-
+// -------------------------------------
   if (rows.length === 0) {
     return <Shimmer />;
   }
