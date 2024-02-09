@@ -9,33 +9,16 @@ import {
   TableRow,
   Button,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { SERVER_API } from "../Utils/constants";
-import axios from "axios";
+import {useState } from "react";
+import useProductList from "../Utils/Hooks/useProductList";
 
 const Products = () => {
   const [rows, rowchange] = useState([]);
   const [page, pagechange] = useState(0);
   const [rowperpage, rowperpagechange] = useState(5);
 
-  useEffect(() => {
-    const getAllMovies = async () => {
-      try {
-        const url = `${SERVER_API}?page=${page}&limit=${rowperpage}`;
-        const response = await axios.get(url);
-        const {
-          data: {
-            data: { info },
-          },
-        } = response;
-        rowchange(info);
-        console.log(info);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getAllMovies();
-  }, [page]);
+  useProductList(page,rowperpage,rowchange)
+ 
 
   const columns = [
     { id: "image", name: "Image" },
