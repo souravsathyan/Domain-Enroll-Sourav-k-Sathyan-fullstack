@@ -13,8 +13,15 @@ import * as Yup from "yup";
 import { Formik } from "formik";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useState } from "react";
-import axios from "axios"
-import { DUMMY_PRODUCT_iMAGE, UPLOAD_API, UPLOAD_PRESET } from "../Utils/constants";
+import axios from "axios";
+import {
+  DUMMY_PRODUCT_iMAGE,
+  SERVER_API,
+  UPLOAD_API,
+  UPLOAD_PRESET,
+} from "../Utils/constants";
+import { InfinitySpin } from "react-loader-spinner";
+import AlertComponent from "../components/Alert";
 
 // import useImageUpload from "../Utils/Hooks/useImageUpload";
 
@@ -34,6 +41,7 @@ const initialValues = {
   gender: "",
   prodDiscount: "",
 };
+
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -55,11 +63,12 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const AddProduct =  () => {
+const AddProduct = () => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(null)
 
-  const [selectedImage,setSelectedImage] = useState(null)
-
-  const handleOnChange = (file)=>{
+  const handleOnChange = (file) => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -69,36 +78,46 @@ const AddProduct =  () => {
     } else {
       setSelectedImage(null);
     }
-  }
+  };
 
-  const handleSubmit = async()=>{
-    const data = new FormData()
-    data.append('file', selectedImage)
-    data.append('upload_preset',UPLOAD_PRESET)
-    try{
-      let api = UPLOAD_API
-      const res = await axios.post(api,data)
-      const {secure_url} = res.data
-      console.log(secure_url)
-    }catch(err){
-      console.log(err)
+  const handleSubmit = async (values) => {
+    setIsLoading(true);
+    // uploading to cloudinary
+    const data = new FormData();
+    data.append("file", selectedImage);
+    data.append("upload_preset", UPLOAD_PRESET);
+    try {
+      let api = UPLOAD_API;
+      const cloudRes = await axios.post(api, data);
+      const { secure_url } = cloudRes.data;
+      const updatedValues = { ...values, prodImage: secure_url };
+
+      const res =await axios.post(SERVER_API+'/add',updatedValues)
+      console.log(res)
+
+      setIsLoading(false);
+      setIsSuccess(true)
+    } catch (err) {
+      console.log(err);
     }
-  }
- 
+  };
 
   return (
     <div>
       <Box sx={{ flexGrow: 1, m: 2, p: 2, position: "relative", top: 100 }}>
+      {
+        isSuccess &&
+         <AlertComponent setIsSuccess={setIsSuccess}/>
+      }
         <Grid container spacing={2}>
-          <Grid item xs={8}>
-            <Item sx={{ p: 8, height: 370 }}>
+          <Grid item xs={12} xl={8}>
+            <Item sx={{p:8,height:370}}>
               <Typography sx={{ fontSize: "h6.fontSize", mb: 4 }}>
                 Add Product
               </Typography>
               <Box
                 sx={{
-                  "& .MuiTextField-root": { m: 1, width: "25ch" },
-                  height: 350,
+                  "& .MuiTextField-root": { m: 1, width: "25ch" }
                 }}
                 noValidate
                 autoComplete="off"
@@ -280,14 +299,43 @@ const AddProduct =  () => {
               </Box>
             </Item>
           </Grid>
-          <Grid item xs={4} sx={{}}>
+          <Grid item xs={12} xl={4} sx={{}}>
             <Item>
-              <Box sx={{ p: 8, height: 360 }}>
-                <img
-                  src={selectedImage ? selectedImage : DUMMY_PRODUCT_iMAGE}
-                  alt="product image coming soon"
-                  style={{ objectFit: "cover", height: "100%", width: "100%" }}
-                />
+              <Box
+                display="flex"
+                height={{xs:500,xl:370}}
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                sx={{ p: 8}}
+              >
+                {isLoading ? (
+                  <InfinitySpin
+                    visible={true}
+                    width="200"
+                    color="#4fa94d"
+                    ariaLabel="infinity-spin-loading"
+                  />
+                ) : (
+                  <>
+                    <Box>
+                      <Typography sx={{ fontSize: "h6.fontSize", mb: 4 }}>
+                        Image Preview
+                      </Typography>
+                    </Box>
+                    <Box>
+                    <img
+                      src={selectedImage ? selectedImage : DUMMY_PRODUCT_iMAGE}
+                      alt="product image coming soon"
+                      style={{
+                        objectFit: "cover",
+                        maxHeight: "300px",
+                        maxWidth: "300px",
+                      }}
+                    />
+                    </Box>
+                  </>
+                )}
               </Box>
             </Item>
           </Grid>

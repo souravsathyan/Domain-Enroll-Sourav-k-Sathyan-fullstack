@@ -27,6 +27,7 @@ export const getAllProducts = asyncErrorHandler(async (req, res, next) => {
 
 export const addProduct = asyncErrorHandler(async (req, res, next) => {
     const { prodName, prodCategory, prodPrice, gender, prodDiscount, prodImage, prodDescription } = req.body
+    console.log(req.body)
     const newProduct = await new Product({
         name: prodName,
         category: prodCategory,
