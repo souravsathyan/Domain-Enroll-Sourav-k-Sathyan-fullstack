@@ -1,4 +1,5 @@
 import {
+  Box,
   Paper,
   Table,
   TableBody,
@@ -8,17 +9,43 @@ import {
   TablePagination,
   TableRow,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Stack,
+  TextField,
 } from "@mui/material";
-import {useState } from "react";
+import { useState } from "react";
 import useProductList from "../Utils/Hooks/useProductList";
+// import axios from "axios";
+import CloseIcon from "@mui/icons-material/Close";
+import {useSelector , useDispatch} from "react-redux"
+import { updateProduct,clearProduct } from "../Utils/store/slice/productSlice";
+import { styled } from "@mui/material/styles";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const Products = () => {
   const [rows, rowchange] = useState([]);
   const [page, pagechange] = useState(0);
   const [rowperpage, rowperpagechange] = useState(5);
-
-  useProductList(page,rowperpage,rowchange)
- 
+  const [open, openchange] = useState(false);
+  const dispatch = useDispatch()
+  const prodSelecor = useSelector((store)=>store.product)
+  useProductList(page, rowperpage, rowchange);
 
   const columns = [
     { id: "image", name: "Image" },
@@ -44,16 +71,29 @@ const Products = () => {
     pagechange(0);
   };
 
-  function handleEdit(row) {
-    console.log("Edit", row);
-    // Your edit logic here
-  }
-
   function handleDelete(row) {
     console.log("Delete", row);
     // Your delete logic here
   }
 
+  const handleOnChange = (file)=>{
+console.log(file)
+  }
+
+  const handleClick = (prod)=>{
+    dispatch(updateProduct(prod))
+    functionopenpopup()
+  }
+  
+
+  const functionopenpopup = () => {
+    openchange(true);
+  };
+
+  const closepopup = () => {
+    dispatch(clearProduct())
+    openchange(false);
+  };
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
       <h1>Products List</h1>
@@ -82,12 +122,12 @@ const Products = () => {
                         column.id !== "image" ? (
                           <TableCell key={column.id}>
                             {column.id === "actions" ? (
-                              <div >
+                              <div>
                                 <Button
-                                sx={{mr:2}}
+                                  sx={{ mr: 2 }}
                                   variant="contained"
                                   color="info"
-                                  onClick={() => handleEdit(row)}
+                                  onClick={() => handleClick(row)}
                                 >
                                   Edit
                                 </Button>
@@ -128,6 +168,61 @@ const Products = () => {
           onRowsPerPageChange={handleRowsPerPage}
         />
       </Paper>
+
+      <Dialog
+        // fullScreen
+        open={open}
+        onClose={closepopup}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Update Product
+          <IconButton onClick={closepopup} style={{ float: "right" }}>
+            <CloseIcon color="primary"></CloseIcon>
+          </IconButton>{" "}
+        </DialogTitle>
+        <DialogContent>
+          {/* <DialogContentText>Do you want remove this user?</DialogContentText> */}
+          <Stack spacing={2} margin={2}>
+            <Box sx={{p:2}}>
+                <img style={{width:'100px',height:'100px'}} src={prodSelecor?.product?.image || ""} alt="" />
+            </Box>
+            
+            <form style={{padding:'10px'}}>
+              <TextField variant="outlined" label="Product name" value={prodSelecor?.product?.name}></TextField>
+              <TextField variant="outlined" label="Category"></TextField>
+              <TextField variant="outlined" label="Price"></TextField>
+              <TextField variant="outlined" label="gender"></TextField>
+
+            <Box sx={{p:2}}>
+            <Button color="primary" variant="contained">
+              Submit
+            </Button>
+            <Button
+                          sx={{ ml: 2 }}
+                          component="label"
+                          variant="contained"
+                          startIcon={<CloudUploadIcon />}
+                        >
+                          Upload file
+                          <VisuallyHiddenInput
+                            type="file"
+                            name="prodImage"
+                            id="prodImage"
+                            onChange={(e) => handleOnChange(e.target.files[0])}
+                          />
+                        </Button>
+            </Box>
+            </form>
+
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          {/* <Button color="success" variant="contained">Yes</Button>
+                    <Button onClick={closepopup} color="error" variant="contained">Close</Button> */}
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

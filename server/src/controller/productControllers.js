@@ -1,5 +1,6 @@
 import Product from "../model/productModel.js"
 import asyncErrorHandler from "../utils/asyncErrorHandler.js"
+import { CustomError } from "../utils/customError.js";
 
 export const getAllProducts = asyncErrorHandler(async (req, res, next) => {
    
@@ -94,3 +95,17 @@ export const deleteProduct = asyncErrorHandler(async (req, res, next) => {
         }
     })
 })
+
+export const getProduct = asyncErrorHandler(async (req, res, next) => {
+    const paramsId = req.params.id
+    const product = await Product.findById({paramsId})
+    if(!product){
+        const error = new CustomError('product could not find',404)
+        next(error)
+    } 
+    res.status(200).json({
+        data:{
+            product
+        }
+    })
+ })
