@@ -38,6 +38,7 @@ const Home = () => {
         justifyContent: "space-around",
       }}
     >
+      {/* Card component */}
       {products.products.map((el) => (
         <MediaCard key={el._id} product={el} handleClick={handleClick}/>
       ))}

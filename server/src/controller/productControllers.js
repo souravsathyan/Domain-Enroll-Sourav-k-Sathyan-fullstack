@@ -3,8 +3,7 @@ import asyncErrorHandler from "../utils/asyncErrorHandler.js"
 import { CustomError } from "../utils/customError.js";
 
 export const getAllProducts = asyncErrorHandler(async (req, res, next) => {
-
-    
+    // getting the page, limit, total counts for getting all products 
     const totalProducts = await Product.countDocuments()
     const page = Math.max(0, parseInt(req.query.page) - 1) || 0;
     const limit = Math.max(1, Math.min(100, parseInt(req.query.limit))) || totalProducts
@@ -29,7 +28,6 @@ export const getAllProducts = asyncErrorHandler(async (req, res, next) => {
 
 export const addProduct = asyncErrorHandler(async (req, res, next) => {
     const { prodName, prodCategory, prodPrice, gender, prodDiscount, prodImage, prodDescription } = req.body
-    console.log(req.body)
     const newProduct = await new Product({
         name: prodName,
         category: prodCategory,
@@ -104,7 +102,7 @@ export const getProduct = asyncErrorHandler(async (req, res, next) => {
     }
     res.status(200).json({
         data: {
-            product
+           info: product
         }
     })
 })

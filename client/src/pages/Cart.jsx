@@ -37,7 +37,7 @@ const Cart = () => {
   const handleClearCart = ()=>{
     dispatch(clearCart())
   }
-
+// if cart is empty
   if(cartSelector.length===0){
     return (
       <Container
@@ -68,9 +68,11 @@ const Cart = () => {
       }}
       maxWidth="xl"
     >
+
       <Typography sx={{ p: 2 }} variant="h3" color="initial">
         Cart
       </Typography>
+
       <Box sx={{ width: "100%" }}>
         <Box   sx={{ display: 'flex', justifyContent: 'flex-end',p:2 }}>
         <Button
@@ -81,6 +83,7 @@ const Cart = () => {
           Delete
         </Button>
         </Box>
+        
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
