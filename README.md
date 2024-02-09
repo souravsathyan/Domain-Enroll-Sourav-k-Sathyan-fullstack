@@ -9,6 +9,7 @@
 - Material ui for responsive design
 - Cloudinary for Image upload
 - React router dom for easier navigation
+- Formik and Yup
 ### Backend
 - MongoDb for database
 - Node and Express for server side
