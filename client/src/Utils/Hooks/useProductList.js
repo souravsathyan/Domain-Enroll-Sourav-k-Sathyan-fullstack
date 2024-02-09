@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { SERVER_API } from "../constants";
 import axios from "axios"
 
-const useProductList = async (page,rowperpage,rowchange)=>{
+const useProductList = async (page,rowperpage,rowchange,rows)=>{
     useEffect(() => {
         const getAllMovies = async () => {
           try {
@@ -20,7 +20,7 @@ const useProductList = async (page,rowperpage,rowchange)=>{
           }
         };
         getAllMovies();
-      }, [page]);
+      }, [page,rows]);
 }
 
 export default useProductList

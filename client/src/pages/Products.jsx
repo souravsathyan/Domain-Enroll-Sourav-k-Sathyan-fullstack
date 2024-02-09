@@ -21,10 +21,14 @@ import { useState } from "react";
 import useProductList from "../Utils/Hooks/useProductList";
 // import axios from "axios";
 import CloseIcon from "@mui/icons-material/Close";
-import {useSelector , useDispatch} from "react-redux"
-import { updateProduct,clearProduct } from "../Utils/store/slice/productSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { updateProduct, clearProduct } from "../Utils/store/slice/productSlice";
 import { styled } from "@mui/material/styles";
+import DialogContentText from '@mui/material/DialogContentText';
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Shimmer from "../components/Skeleton";
+import { SERVER_API } from "../Utils/constants";
+import axios from "axios";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -42,10 +46,12 @@ const Products = () => {
   const [rows, rowchange] = useState([]);
   const [page, pagechange] = useState(0);
   const [rowperpage, rowperpagechange] = useState(5);
+  const [openAlert, setOpenAlert] = useState(false);
   const [open, openchange] = useState(false);
-  const dispatch = useDispatch()
-  const prodSelecor = useSelector((store)=>store.product)
-  useProductList(page, rowperpage, rowchange);
+  const dispatch = useDispatch();
+  const prodSelecor = useSelector((store) => store.product);
+  useProductList(page, rowperpage, rowchange, rows);
+
 
   const columns = [
     { id: "image", name: "Image" },
@@ -71,29 +77,51 @@ const Products = () => {
     pagechange(0);
   };
 
-  function handleDelete(row) {
-    console.log("Delete", row);
-    // Your delete logic here
-  }
+  const handleDelete = async (row) => {
+    try {
+      const url = `${SERVER_API}/delete/${row._id}`;
+      const response = await axios.delete(url);
+      if (!response.data.data.error) {
+        const updatedList = rows.products.filter(
+          (prod) => prod._id !== row._id
+        );
+        rowchange(updatedList);
+        setOpenAlert(false);
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleClickOpen = () => {
+    setOpenAlert(true);
+  };
 
-  const handleOnChange = (file)=>{
-console.log(file)
-  }
+  const handleClose = () => {
+    setOpenAlert(false);
+  };
 
-  const handleClick = (prod)=>{
-    dispatch(updateProduct(prod))
-    functionopenpopup()
-  }
-  
+  const handleOnChange = (file) => {
+    console.log(file);
+  };
+
+  const handleClick = (prod) => {
+    dispatch(updateProduct(prod));
+    functionopenpopup();
+  };
 
   const functionopenpopup = () => {
     openchange(true);
   };
 
   const closepopup = () => {
-    dispatch(clearProduct())
+    dispatch(clearProduct());
     openchange(false);
   };
+
+  if (rows.length === 0) {
+    return <Shimmer />;
+  }
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
       <h1>Products List</h1>
@@ -132,12 +160,35 @@ console.log(file)
                                   Edit
                                 </Button>
                                 <Button
-                                  variant="contained"
+                                  variant="outlined"
                                   color="error"
-                                  onClick={() => handleDelete(row)}
+                                  onClick={handleClickOpen}
                                 >
-                                  Delete
+                                 Delete
                                 </Button>
+                                <Dialog
+                                  open={openAlert}
+                                  onClose={handleClose}
+                                  aria-labelledby="alert-dialog-title"
+                                  aria-describedby="alert-dialog-description"
+                                >
+                                  <DialogTitle id="alert-dialog-title">
+                                    {"Delete product?"}
+                                  </DialogTitle>
+                                  <DialogContent>
+                                    <DialogContentText id="alert-dialog-description">
+                                      You are going to delete the product.
+                                    </DialogContentText>
+                                  </DialogContent>
+                                  <DialogActions>
+                                    <Button onClick={handleClose}>
+                                      Disagree
+                                    </Button>
+                                    <Button onClick={()=>handleDelete(row)} autoFocus>
+                                      Agree
+                                    </Button>
+                                  </DialogActions>
+                                </Dialog>
                               </div>
                             ) : (
                               row[column.id]
@@ -185,37 +236,44 @@ console.log(file)
         <DialogContent>
           {/* <DialogContentText>Do you want remove this user?</DialogContentText> */}
           <Stack spacing={2} margin={2}>
-            <Box sx={{p:2}}>
-                <img style={{width:'100px',height:'100px'}} src={prodSelecor?.product?.image || ""} alt="" />
+            <Box sx={{ p: 2 }}>
+              <img
+                style={{ width: "100px", height: "100px" }}
+                src={prodSelecor?.product?.image || ""}
+                alt=""
+              />
             </Box>
-            
-            <form style={{padding:'10px'}}>
-              <TextField variant="outlined" label="Product name" value={prodSelecor?.product?.name}></TextField>
+
+            <form style={{ padding: "10px" }}>
+              <TextField
+                variant="outlined"
+                label="Product name"
+                value={prodSelecor?.product?.name}
+              ></TextField>
               <TextField variant="outlined" label="Category"></TextField>
               <TextField variant="outlined" label="Price"></TextField>
               <TextField variant="outlined" label="gender"></TextField>
 
-            <Box sx={{p:2}}>
-            <Button color="primary" variant="contained">
-              Submit
-            </Button>
-            <Button
-                          sx={{ ml: 2 }}
-                          component="label"
-                          variant="contained"
-                          startIcon={<CloudUploadIcon />}
-                        >
-                          Upload file
-                          <VisuallyHiddenInput
-                            type="file"
-                            name="prodImage"
-                            id="prodImage"
-                            onChange={(e) => handleOnChange(e.target.files[0])}
-                          />
-                        </Button>
-            </Box>
+              <Box sx={{ p: 2 }}>
+                <Button color="primary" variant="contained">
+                  Submit
+                </Button>
+                <Button
+                  sx={{ ml: 2 }}
+                  component="label"
+                  variant="contained"
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload file
+                  <VisuallyHiddenInput
+                    type="file"
+                    name="prodImage"
+                    id="prodImage"
+                    onChange={(e) => handleOnChange(e.target.files[0])}
+                  />
+                </Button>
+              </Box>
             </form>
-
           </Stack>
         </DialogContent>
         <DialogActions>

@@ -9,6 +9,7 @@ import AddProduct from './pages/AddProduct.jsx';
 import Error from './pages/Error.jsx';
 import {Provider} from "react-redux"
 import appStore from './Utils/store/appStore.js';
+import Cart from './pages/Cart.jsx';
 
 
 const appRouter = createBrowserRouter([
@@ -27,6 +28,10 @@ const appRouter = createBrowserRouter([
       {
         path:"/addProducts",
         element:<AddProduct/>
+      },
+      {
+        path:"/cart",
+        element:<Cart/>
       }
     ],
     errorElement:<Error/>
